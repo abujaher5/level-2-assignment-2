@@ -1,15 +1,21 @@
 import express, { Request, Response } from "express";
+import initialDB from "./config/database";
+import { userRoutes } from "./modules/user/user.route";
 
 const app = express();
 
 // parser
 app.use(express.json());
 
+// database initialize
+initialDB();
+
 app.get("/", (req: Request, res: Response) => {
-  res.send("Hello from assignment 2");
+  res.send("Hello from room rental system..");
 });
 
-// app.post("/users");
+// user crud
+app.use("/api/v1/users", userRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
