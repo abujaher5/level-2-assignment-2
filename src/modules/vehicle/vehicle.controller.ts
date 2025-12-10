@@ -1,15 +1,12 @@
 import { Request, Response } from "express";
+import { vehicleServices } from "./vehicle.service";
 
-import { userServices } from "./user.service";
-
-const createUser = async (req: Request, res: Response) => {
-  // const { name, email,password } = req.body;
+const entryVehicle = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.createUser(req.body);
-    console.log(result.rows[0]);
+    const result = await vehicleServices.entryVehicle(req.body);
     res.status(201).json({
       success: true,
-      message: "Data Inserted Successfully.",
+      message: "Vehicle created successfully.",
       data: result.rows[0],
     });
   } catch (error: any) {
@@ -19,12 +16,13 @@ const createUser = async (req: Request, res: Response) => {
     });
   }
 };
-const getUser = async (req: Request, res: Response) => {
+
+const getVehicles = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.getUser();
+    const result = await vehicleServices.getVehicles();
     res.status(200).json({
       success: true,
-      message: "Users retrieved successfully.",
+      message: "Vehicles retrieved successfully.",
       data: result.rows,
     });
   } catch (error: any) {
@@ -35,20 +33,21 @@ const getUser = async (req: Request, res: Response) => {
     });
   }
 };
-const getSingleUser = async (req: Request, res: Response) => {
+const getSingleVehicle = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.getSingleUser(req.params.id as string);
-    // console.log(result);
+    const result = await vehicleServices.getSingleVehicle(
+      req.params.vehicleId as string
+    );
 
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,
-        message: "User not found.",
+        message: "Vehicle not found.",
       });
     } else {
       res.status(200).json({
         success: true,
-        message: "User fetched successfully..",
+        message: "Vehicle fetched successfully..",
         data: result.rows[0],
       });
     }
@@ -61,23 +60,24 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-const updateUser = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-  console.log("userId", userId);
-  // const { role, } = req.body;
+const updateVehicle = async (req: Request, res: Response) => {
+  const vehicleId = req.params.vehicleId;
+
   try {
-    const result = await userServices.updateUser(req.body, userId as string);
-    // console.log(result);
+    const result = await vehicleServices.updateVehicle(
+      req.body,
+      vehicleId as string
+    );
 
     if (result.rows.length === 0) {
       res.status(404).json({
         success: false,
-        message: "User not found.",
+        message: "Vehicle not found.",
       });
     } else {
       res.status(200).json({
         success: true,
-        message: "User Updated Successfully..",
+        message: "Vehicle Updated Successfully..",
         data: result.rows[0],
       });
     }
@@ -89,19 +89,19 @@ const updateUser = async (req: Request, res: Response) => {
     });
   }
 };
-const deleteUser = async (req: Request, res: Response) => {
+const deleteVehicle = async (req: Request, res: Response) => {
   try {
-    const result = await userServices.deleteUser(req.params.userId!);
+    const result = await vehicleServices.deleteVehicle(req.params.vehicleId!);
 
     if (result.rowCount === 0) {
       res.status(404).json({
         success: false,
-        message: "User not found.",
+        message: "Vehicle not found.",
       });
     } else {
       res.status(200).json({
         success: true,
-        message: "User Deleted Successfully..",
+        message: "Vehicle Deleted Successfully..",
         data: result.rows,
       });
     }
@@ -114,10 +114,10 @@ const deleteUser = async (req: Request, res: Response) => {
   }
 };
 
-export const userControllers = {
-  createUser,
-  getUser,
-  getSingleUser,
-  updateUser,
-  deleteUser,
+export const vehicleControllers = {
+  entryVehicle,
+  getVehicles,
+  getSingleVehicle,
+  updateVehicle,
+  deleteVehicle,
 };

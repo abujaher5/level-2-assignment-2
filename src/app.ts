@@ -1,6 +1,8 @@
 import express, { Request, Response } from "express";
 import initialDB from "./config/database";
 import { userRoutes } from "./modules/user/user.route";
+import { vehicleRoutes } from "./modules/vehicle/vehicle.route";
+import { bookingRoutes } from "./modules/booking/booking.route";
 
 const app = express();
 
@@ -16,6 +18,12 @@ app.get("/", (req: Request, res: Response) => {
 
 // user crud
 app.use("/api/v1/users", userRoutes);
+
+// vehicle crud
+app.use("/api/v1/vehicles", vehicleRoutes);
+
+// booking crud
+app.use("/api/v1/bookings", bookingRoutes);
 
 app.use((req, res) => {
   res.status(404).json({
