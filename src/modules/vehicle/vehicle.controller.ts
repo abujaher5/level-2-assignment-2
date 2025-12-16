@@ -20,11 +20,21 @@ const entryVehicle = async (req: Request, res: Response) => {
 const getVehicles = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.getVehicles();
-    res.status(200).json({
-      success: true,
-      message: "Vehicles retrieved successfully.",
-      data: result.rows,
-    });
+    const daily_rent_price = Number(result.rows[0].daily_rent_price);
+
+    if (result.rows.length === 0) {
+      res.status(200).json({
+        success: true,
+        message: "No vehicles found.",
+        data: result.rows,
+      });
+    } else {
+      res.status(200).json({
+        success: true,
+        message: "Vehicles retrieved successfully.",
+        data: result.rows,
+      });
+    }
   } catch (error: any) {
     res.status(500).json({
       success: false,
@@ -47,7 +57,7 @@ const getSingleVehicle = async (req: Request, res: Response) => {
     } else {
       res.status(200).json({
         success: true,
-        message: "Vehicle fetched successfully..",
+        message: "Vehicle retrieved successfully..",
         data: result.rows[0],
       });
     }
@@ -89,6 +99,7 @@ const updateVehicle = async (req: Request, res: Response) => {
     });
   }
 };
+
 const deleteVehicle = async (req: Request, res: Response) => {
   try {
     const result = await vehicleServices.deleteVehicle(req.params.vehicleId!);
@@ -96,13 +107,12 @@ const deleteVehicle = async (req: Request, res: Response) => {
     if (result.rowCount === 0) {
       res.status(404).json({
         success: false,
-        message: "Vehicle not found.",
+        message: "Vehicle booking status is active.",
       });
     } else {
       res.status(200).json({
         success: true,
         message: "Vehicle Deleted Successfully..",
-        data: result.rows,
       });
     }
   } catch (error: any) {

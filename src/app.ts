@@ -3,6 +3,7 @@ import initialDB from "./config/database";
 import { userRoutes } from "./modules/user/user.route";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.route";
 import { bookingRoutes } from "./modules/booking/booking.route";
+import { authRoutes } from "./modules/auth/auth.routes";
 
 const app = express();
 
@@ -16,6 +17,8 @@ app.get("/", (req: Request, res: Response) => {
   res.send("Hello from room rental system..");
 });
 
+// auth
+app.use("/api/v1/auth/", authRoutes);
 // user crud
 app.use("/api/v1/users", userRoutes);
 

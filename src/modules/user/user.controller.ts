@@ -2,23 +2,6 @@ import { Request, Response } from "express";
 
 import { userServices } from "./user.service";
 
-const createUser = async (req: Request, res: Response) => {
-  // const { name, email,password } = req.body;
-  try {
-    const result = await userServices.createUser(req.body);
-    console.log(result.rows[0]);
-    res.status(201).json({
-      success: true,
-      message: "Data Inserted Successfully.",
-      data: result.rows[0],
-    });
-  } catch (error: any) {
-    return res.status(500).json({
-      success: false,
-      message: error.message,
-    });
-  }
-};
 const getUser = async (req: Request, res: Response) => {
   try {
     const result = await userServices.getUser();
@@ -35,22 +18,47 @@ const getUser = async (req: Request, res: Response) => {
     });
   }
 };
-const getSingleUser = async (req: Request, res: Response) => {
-  try {
-    const result = await userServices.getSingleUser(req.params.id as string);
-    // console.log(result);
 
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User fetched successfully..",
-        data: result.rows[0],
-      });
+const updateUserInfo = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.userId;
+    const user = req.user!;
+
+    if (user.role === "customer") {
+      const result = await userServices.userUpdateOwnProfile(req.body, user.id);
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found.",
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "User Profile Updated Successfully..",
+          data: result.rows[0],
+        });
+      }
+    }
+
+    if (user.role === "admin") {
+      const result = await userServices.adminUpdateUser(
+        req.body,
+        userId as string
+      );
+
+      if (result.rows.length === 0) {
+        return res.status(404).json({
+          success: false,
+          message: "User not found.",
+        });
+      } else {
+        return res.status(200).json({
+          success: true,
+          message: "User Updated Successfully..",
+          data: result.rows[0],
+        });
+      }
     }
   } catch (error: any) {
     res.status(500).json({
@@ -61,34 +69,6 @@ const getSingleUser = async (req: Request, res: Response) => {
   }
 };
 
-const updateUser = async (req: Request, res: Response) => {
-  const userId = req.params.userId;
-  console.log("userId", userId);
-  // const { role, } = req.body;
-  try {
-    const result = await userServices.updateUser(req.body, userId as string);
-    // console.log(result);
-
-    if (result.rows.length === 0) {
-      res.status(404).json({
-        success: false,
-        message: "User not found.",
-      });
-    } else {
-      res.status(200).json({
-        success: true,
-        message: "User Updated Successfully..",
-        data: result.rows[0],
-      });
-    }
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error.message,
-      details: error,
-    });
-  }
-};
 const deleteUser = async (req: Request, res: Response) => {
   try {
     const result = await userServices.deleteUser(req.params.userId!);
@@ -96,13 +76,12 @@ const deleteUser = async (req: Request, res: Response) => {
     if (result.rowCount === 0) {
       res.status(404).json({
         success: false,
-        message: "User not found.",
+        message: "User has active booking status..",
       });
     } else {
       res.status(200).json({
         success: true,
         message: "User Deleted Successfully..",
-        data: result.rows,
       });
     }
   } catch (error: any) {
@@ -115,9 +94,10 @@ const deleteUser = async (req: Request, res: Response) => {
 };
 
 export const userControllers = {
-  createUser,
+  // createUser,
   getUser,
-  getSingleUser,
-  updateUser,
+  // adminUpdateUser,
+  // userUpdateOwnProfile,
+  updateUserInfo,
   deleteUser,
 };
