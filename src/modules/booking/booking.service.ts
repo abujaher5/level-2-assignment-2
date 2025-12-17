@@ -176,6 +176,26 @@ const cancelOwnBooking = async (bookingId: string, customer_id: string) => {
   return result;
 };
 
+export const autoReturnExpiredBookings = async () => {
+  const result = await pool.query(`
+    WITH expired_bookings AS (
+      UPDATE bookings
+      SET status = 'returned'
+      WHERE status = 'active'
+        AND rent_end_date < CURRENT_DATE
+      RETURNING vehicle_id
+    ),
+    updated_vehicles AS (
+      UPDATE vehicles
+      SET availability_status = 'available'
+      WHERE id IN (SELECT vehicle_id FROM expired_bookings)
+    )
+    SELECT COUNT(*) FROM expired_bookings;
+  `);
+
+  return Number(result.rows[0].count);
+};
+
 export const bookingServices = {
   createBooking,
   getBookings,

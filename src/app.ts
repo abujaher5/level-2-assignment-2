@@ -4,6 +4,7 @@ import { userRoutes } from "./modules/user/user.route";
 import { vehicleRoutes } from "./modules/vehicle/vehicle.route";
 import { bookingRoutes } from "./modules/booking/booking.route";
 import { authRoutes } from "./modules/auth/auth.routes";
+import "./jobs/autoReturn.job";
 
 const app = express();
 
